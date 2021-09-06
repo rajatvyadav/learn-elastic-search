@@ -1,6 +1,7 @@
  # Go - Gin - Elasticsearch
 
-This is the sample client project for demostration of Elasticsearch using go-gin
+This is the sample client project for demostration of Elasticsearch using go-gin.
+
 You can also check my article - https://rajatvyadav.medium.com/elasticsearch-in-go-65388f8dbfad
 
 ## Running the application
