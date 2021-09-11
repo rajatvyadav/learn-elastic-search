@@ -34,6 +34,7 @@ func main() {
 	})
 	r.POST("/bulkImportEmployeeDetails", dao.InsertEmployeeDetailsHandler(esClient))
 	r.POST("/searchEmployee", dao.SearchEmployeeHandler(esClient))
+	r.POST("/searchEmployeeWithPrefix", dao.SearchEmployeeHavingPrefixHandler(esClient))
 
 	r.Run(":4700")
 }

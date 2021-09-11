@@ -168,3 +168,55 @@ func SearchEmployeeHandler(es *elasticsearch.Client) gin.HandlerFunc {
 		})
 	}
 }
+
+// Search for document containing firstName or lastname matches or having prefix to key in parameters
+// return the entire document
+func SearchEmployeeHavingPrefixHandler(es *elasticsearch.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var field model.Field
+		err := c.Bind(&field)
+		if err != nil {
+			c.JSON(http.StatusExpectationFailed, gin.H{
+				"error": err,
+			})
+		}
+		// Build the request body.
+		query := `{
+			"query": {
+			  "match_phrase_prefix": {
+				"first_name": {
+				  "query": "` + field.Key + `"
+				}
+			  }
+			}
+		  }`
+		// Perform the search request.
+		res, err := es.Search(
+			es.Search.WithIndex("employees"),
+			es.Search.WithBody(strings.NewReader(query)),
+			es.Search.WithTrackTotalHits(true),
+			es.Search.WithPretty(),
+		)
+		if err != nil {
+			fmt.Printf("Error getting response: %s", err)
+			if err != nil {
+				c.JSON(http.StatusExpectationFailed, gin.H{
+					"error": err,
+				})
+			}
+		}
+		defer res.Body.Close()
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			fmt.Printf("Error parsing the response body: %s", err)
+			if err != nil {
+				c.JSON(http.StatusExpectationFailed, gin.H{
+					"error": err,
+				})
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"details": r,
+		})
+	}
+}
